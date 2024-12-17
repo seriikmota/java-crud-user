@@ -24,5 +24,12 @@ public class UserExistLogin implements IUserValidation {
                 messagesToThrow.add(new Message(MessageEnum.LOGIN_EXISTS));
             }
         }
+        if (action.equals(ValidationActionsEnum.UPDATE)) {
+            if (data.getLogin() != null && userRepository.existsByLogin(data.getLogin())) {
+                if (!userRepository.existsByLoginAndId(data.getLogin(), data.getId())) {
+                    messagesToThrow.add(new Message(MessageEnum.LOGIN_EXISTS));
+                }
+            }
+        }
     }
 }

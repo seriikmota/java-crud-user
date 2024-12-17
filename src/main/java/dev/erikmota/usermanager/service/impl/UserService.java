@@ -4,6 +4,8 @@ import dev.erikmota.usermanager.dto.request.UserRequestDTO;
 import dev.erikmota.usermanager.entities.User;
 import dev.erikmota.usermanager.enums.ValidationActionsEnum;
 import dev.erikmota.usermanager.exception.BusinessException;
+import dev.erikmota.usermanager.exception.DataException;
+import dev.erikmota.usermanager.exception.ParameterRequiredException;
 import dev.erikmota.usermanager.exception.message.Message;
 import dev.erikmota.usermanager.exception.message.MessageEnum;
 import dev.erikmota.usermanager.exception.message.MessageResponse;
@@ -17,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService implements IUserService {
@@ -57,6 +57,34 @@ public class UserService implements IUserService {
         return userRepository.save(dataCreate);
     }
 
+    @Override
+    public User update(UserRequestDTO dtoUpdate, Long id) {
+        List<Message> messagesToThrow = new ArrayList<>();
+
+        validateMandatoryFieldsDTO(dtoUpdate, messagesToThrow);
+        prepareToMapUpdate(dtoUpdate);
+        validateToMapUpdate(dtoUpdate, messagesToThrow);
+
+        throwMessages(messagesToThrow);
+
+        User dataUpdate = userMapper.toModel(dtoUpdate);
+        return this.update(dataUpdate, id);
+    }
+
+    private User update(User dataUpdate, Long id) {
+        List<Message> messagesToThrow = new ArrayList<>();
+        var dataDB = validateIdModelExistsAndGet(id);
+        dataUpdate.setId(id);
+
+        prepareToUpdate(dataUpdate);
+        validateBusinessLogicForUpdate(dataUpdate, messagesToThrow);
+
+        throwMessages(messagesToThrow);
+
+        userMapper.updateModelFromModel(dataDB, dataUpdate);
+        return userRepository.save(dataDB);
+    }
+
     private void prepareToMapCreate(UserRequestDTO dtoCreate) {
         dtoCreate.setLogin(Utils.trim(dtoCreate.getLogin()));
         dtoCreate.setPassword(Utils.trim(dtoCreate.getPassword()));
@@ -75,6 +103,32 @@ public class UserService implements IUserService {
 
     private void prepareToCreate(User entity) {
         entity.setPassword(Utils.encryptPassword(entity.getPassword()));
+    }
+
+    private void prepareToMapUpdate(UserRequestDTO dtoUpdate) {
+
+    }
+
+    private void validateToMapUpdate(UserRequestDTO dtoUpdate, List<Message> messagesToThrow) {
+        this.validateAnnotations(dtoUpdate, messagesToThrow);
+        if (dtoUpdate.getPassword() != null && !Utils.comparePasswords(dtoUpdate.getPassword(), dtoUpdate.getConfirmPassword())) {
+            messagesToThrow.add(new Message(MessageEnum.PASSWORDS_DIFFERENT));
+        }
+    }
+
+    private void prepareToUpdate(User dataUpdate) {
+        dataUpdate.setPassword(Utils.encryptPassword(dataUpdate.getPassword()));
+    }
+
+    public User validateIdModelExistsAndGet(Long id){
+        if (!Objects.nonNull(id)) throw new ParameterRequiredException("id");
+
+        Optional<User> byId = userRepository.findById(id);
+        if (byId.isPresent()) {
+            return byId.get();
+        } else {
+            throw new DataException(MessageEnum.NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
     }
 
     private void validateMandatoryFieldsDTO(UserRequestDTO dto, List<Message> messagesToThrow) {
@@ -101,6 +155,10 @@ public class UserService implements IUserService {
 
     private void validateBusinessLogicForInsert(User entity, List<Message> messagesToThrow) {
         validations.forEach(v -> v.validate(entity, ValidationActionsEnum.CREATE, messagesToThrow));
+    }
+
+    private void validateBusinessLogicForUpdate(User entity, List<Message> messagesToThrow) {
+        validations.forEach(v -> v.validate(entity, ValidationActionsEnum.UPDATE, messagesToThrow));
     }
 
     private void throwMessages(List<Message> messagesToThrow) {

@@ -5,4 +5,5 @@ import dev.erikmota.usermanager.entities.User;
 
 public interface IUserService {
     User create(UserRequestDTO dtoCreate);
+    User update(UserRequestDTO dtoUpdate, Long id);
 }

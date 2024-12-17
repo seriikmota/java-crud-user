@@ -19,7 +19,11 @@ public class Utils {
 
     public static String encryptPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
+        if (password != null) {
+            return encoder.encode(password);
+        } else {
+            return null;
+        }
     }
 
     public static List<MessageEnum> validatePassword(String password) {
