@@ -61,4 +61,11 @@ public class UserController implements IUserController {
         UserResponseDTO dtoResult = mapper.toDTO(userService.getById(id));
         return ResponseEntity.ok(dtoResult);
     }
+
+    @DeleteMapping(path = "/{id}")
+    @Transactional
+    public ResponseEntity<UserResponseDTO> delete(@PathVariable Long id){
+        UserResponseDTO deleteDTO = mapper.toDTO(userService.deleteById(id));
+        return ResponseEntity.ok(deleteDTO);
+    }
 }

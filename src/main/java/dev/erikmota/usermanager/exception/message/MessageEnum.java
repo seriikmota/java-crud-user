@@ -13,7 +13,8 @@ public enum MessageEnum {
     PASSWORD_MIN_LENGTH("ME007", Message.MessageType.ERROR),
     PASSWORD_NUM_LETTER("ME008", Message.MessageType.ERROR),
     PARAMETER_REQUIRED("ME009", Message.MessageType.ERROR),
-    NOT_FOUND("ME010", Message.MessageType.ERROR);
+    NOT_FOUND("ME010", Message.MessageType.ERROR),
+    DELETE_USER_ACTIVE("ME011", Message.MessageType.ERROR);
 
     private final String code;
     private final Message.MessageType type;

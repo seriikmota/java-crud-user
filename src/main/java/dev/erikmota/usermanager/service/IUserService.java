@@ -13,4 +13,5 @@ public interface IUserService {
     List<User> listAll();
     Page<User> listAll(String search, Boolean enabled, Pageable pageable);
     User getById(Long id);
+    User deleteById(Long id);
 }

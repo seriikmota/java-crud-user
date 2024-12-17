@@ -51,6 +51,21 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User deleteById(Long id) {
+        List<Message> messagesToThrow = new ArrayList<>();
+
+        User dataToRemove = this.validateIdModelExistsAndGet(id);
+
+        validateBusinessLogicForDelete(dataToRemove, messagesToThrow);
+
+        throwMessages(messagesToThrow);
+
+        prepareToDelete(dataToRemove);
+        this.userRepository.delete(dataToRemove);
+        return dataToRemove;
+    }
+
+    @Override
     public User create(UserRequestDTO dtoCreate) {
         List<Message> messagesToThrow = new ArrayList<>();
 
@@ -101,6 +116,8 @@ public class UserService implements IUserService {
         userMapper.updateModelFromModel(dataDB, dataUpdate);
         return userRepository.save(dataDB);
     }
+
+    private void prepareToDelete(User dataToDelete) {}
 
     private void prepareToMapCreate(UserRequestDTO dtoCreate) {
         dtoCreate.setLogin(Utils.trim(dtoCreate.getLogin()));
@@ -176,6 +193,10 @@ public class UserService implements IUserService {
 
     private void validateBusinessLogicForUpdate(User entity, List<Message> messagesToThrow) {
         validations.forEach(v -> v.validate(entity, ValidationActionsEnum.UPDATE, messagesToThrow));
+    }
+
+    private void validateBusinessLogicForDelete(User entity, List<Message> messagesToThrow) {
+        validations.forEach(v -> v.validate(entity, ValidationActionsEnum.DELETE, messagesToThrow));
     }
 
     private void throwMessages(List<Message> messagesToThrow) {
