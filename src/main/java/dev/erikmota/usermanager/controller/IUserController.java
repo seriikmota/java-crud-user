@@ -50,4 +50,11 @@ public interface IUserController {
             @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
     })
     ResponseEntity<UserResponseDTO> getById(@PathVariable Long id);
+
+    @Operation(description = "Endpoint to remove a object", responses = {
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true)))
+    })
+    ResponseEntity<UserResponseDTO> delete(@PathVariable Long id);
 }
