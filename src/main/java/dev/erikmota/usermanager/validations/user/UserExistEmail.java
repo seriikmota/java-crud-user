@@ -24,5 +24,12 @@ public class UserExistEmail implements IUserValidation {
                 messagesToThrow.add(new Message(MessageEnum.EMAIL_EXISTS));
             }
         }
+        if (action.equals(ValidationActionsEnum.UPDATE)) {
+            if (data.getEmail() != null && userRepository.existsByEmail(data.getEmail())) {
+                if (!userRepository.existsByEmailAndId(data.getEmail(), data.getId())) {
+                    messagesToThrow.add(new Message(MessageEnum.EMAIL_EXISTS));
+                }
+            }
+        }
     }
 }

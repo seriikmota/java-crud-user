@@ -11,7 +11,9 @@ public enum MessageEnum {
     EMAIL_EXISTS("ME005", Message.MessageType.ERROR),
     LOGIN_EXISTS("ME006", Message.MessageType.ERROR),
     PASSWORD_MIN_LENGTH("ME007", Message.MessageType.ERROR),
-    PASSWORD_NUM_LETTER("ME008", Message.MessageType.ERROR);
+    PASSWORD_NUM_LETTER("ME008", Message.MessageType.ERROR),
+    PARAMETER_REQUIRED("ME009", Message.MessageType.ERROR),
+    NOT_FOUND("ME010", Message.MessageType.ERROR);
 
     private final String code;
     private final Message.MessageType type;

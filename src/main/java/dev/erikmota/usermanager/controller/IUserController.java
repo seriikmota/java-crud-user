@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface IUserController {
@@ -15,4 +16,11 @@ public interface IUserController {
             @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(hidden = true))),
     })
     ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO dtoCreate);
+
+    @Operation(description = "Endpoint to edit a object", responses = {
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", content = @Content(schema = @Schema(hidden = true))),
+    })
+    ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UserRequestDTO dto);
 }
