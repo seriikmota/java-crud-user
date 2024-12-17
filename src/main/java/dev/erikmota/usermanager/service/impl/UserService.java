@@ -16,6 +16,8 @@ import dev.erikmota.usermanager.service.IUserService;
 import dev.erikmota.usermanager.util.Utils;
 import dev.erikmota.usermanager.validations.IUserValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +34,21 @@ public class UserService implements IUserService {
 
     @Autowired
     private List<IUserValidation> validations = new ArrayList<>();
+
+    @Override
+    public List<User> listAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Page<User> listAll(String search, Boolean enabled, Pageable pageable) {
+        return userRepository.search(search, enabled, pageable);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return this.validateIdModelExistsAndGet(id);
+    }
 
     @Override
     public User create(UserRequestDTO dtoCreate) {
